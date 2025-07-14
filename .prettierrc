@@ -1,0 +1,16 @@
+
+{
+  "semi": true,
+  "singleQuote": false,
+  "tabWidth": 4,
+  "useTabs": false,
+  "trailingComma": "all",
+  "printWidth": 80,
+  "bracketSpacing": false,
+  "arrowParens": "always",
+  "proseWrap": "never",
+  "quoteProps": "consistent",
+  "htmlWhitespaceSensitivity": "strict",
+  "embeddedLanguageFormatting": "auto",
+  "endOfLine": "lf"
+}
