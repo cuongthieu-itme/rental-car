@@ -33,42 +33,52 @@ const DatePicker: React.FC<DatePickerProps> = ({ label, name }) => {
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem className="col-span-12 sm:col-span-6 mt-2">
-          <FormLabel className="block">{label}</FormLabel>
-          <FormControl>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    INPUT_CLASSNAME,
-                    "justify-start mt-2",
-                    !field.value && "text-muted-foreground",
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {field.value ? (
-                    format(field.value, "PPP")
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={field.value}
-                  onSelect={field.onChange}
-                  disabled={(date) => date > new Date()}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
+      render={({ field }) => {
+        // Convert string to Date for display, handle both string and Date
+        const displayValue = field.value
+          ? (field.value instanceof Date ? field.value : new Date(field.value))
+          : null;
+
+        return (
+          <FormItem className="col-span-12 sm:col-span-6 mt-2">
+            <FormLabel className="block">{label}</FormLabel>
+            <FormControl>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      INPUT_CLASSNAME,
+                      "justify-start mt-2",
+                      !displayValue && "text-muted-foreground",
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {displayValue ? (
+                      format(displayValue, "PPP")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={displayValue || undefined}
+                    onSelect={(date) => {
+                      // Convert Date back to string for form storage
+                      field.onChange(date ? date.toISOString() : "");
+                    }}
+                    disabled={(date) => date > new Date()}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 };

@@ -73,10 +73,51 @@ const EditCarSheet: React.FC = () => {
 
     const {handleSubmit, watch, setValue, reset} = formMethods;
     const carPurpose = watch("carPurpose");
+
+    // Populate form with existing car data when data is loaded
+    useEffect(() => {
+        if (data && !isLoading) {
+            // Determine carPurpose from the loaded data
+            let purpose = "rent"; // default
+            if (data.isForHire) purpose = "ride";
+            else if (data.isForDelivery) purpose = "deliver";
+            else if (data.isForRent) purpose = "rent";
+
+            // Set each field individually to avoid type conflicts
+            setValue("name", data.name || "");
+            setValue("description", data.description || "");
+            setValue("make", data.make || "");
+            setValue("model", data.model || "");
+            setValue("mileage", data.mileage || 0);
+            setValue("color", data.color || "");
+            setValue("pricePerDay", data.pricePerDay || 0);
+            setValue("pricePerKm", data.pricePerKm || 0);
+            setValue("isForDelivery", data.isForDelivery || false);
+            setValue("isAvailable", data.isAvailable || true);
+            setValue("isForHire", data.isForHire || false);
+            setValue("isForRent", data.isForRent || false);
+            setValue("bodyType", data.bodyType || "");
+            setValue("fuelType", data.fuelType || "");
+            setValue("transmission", data.transmission || "");
+            setValue("driveType", data.driveType || "");
+            setValue("condition", data.condition || "");
+            setValue("engineSize", data.engineSize || 0);
+            setValue("doors", data.doors || 0);
+            setValue("cylinders", data.cylinders || 0);
+            setValue("features", data.features || []);
+            setValue("dateManufactured", data.dateManufactured || "");
+            setValue("images", data.images || []);
+            setValue("carPurpose", purpose);
+
+            // Set existing images for file upload component
+            setFiles(data.images || []);
+        }
+    }, [data, isLoading, setValue]);
+
     useEffect(() => {
         if (isError) {
             toast.error("Failed to fetch car data");
-        } else if (data) {
+        } else if (data && carPurpose) {
             const purposeMap = {
                 rent: {isForRent: true, isForHire: false, isForDelivery: false},
                 ride: {isForRent: false, isForHire: true, isForDelivery: false},
@@ -94,7 +135,7 @@ const EditCarSheet: React.FC = () => {
             setValue("isForHire", purpose.isForHire);
             setValue("isForDelivery", purpose.isForDelivery);
         }
-    }, [carPurpose, data, isError, reset, setValue]);
+    }, [carPurpose, data, isError, setValue]);
 
     useEffect(() => {
         setValue("images", files);

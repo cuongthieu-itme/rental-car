@@ -16,14 +16,21 @@ const carUpdateSchema = z
     );
 
 export const useUpdateCar = () => {
-    let id: string | undefined;
     const queryClient = useQueryClient();
 
     const mutation = useMutation({
         mutationFn: async (car: z.infer<typeof carUpdateSchema>) => {
-            id = car.id;
+            // Ensure all boolean fields have proper values
+            const carData = {
+                ...car,
+                isForDelivery: car.isForDelivery ?? false,
+                isAvailable: car.isAvailable ?? true,
+                isForHire: car.isForHire ?? false,
+                isForRent: car.isForRent ?? false,
+            };
+
             const response = await client.api.cars.$put({
-                json: car,
+                json: carData,
             });
             if (!response.ok) {
                 throw new Error("Failed to update car");
@@ -31,8 +38,11 @@ export const useUpdateCar = () => {
             const {data} = await response.json();
             return data;
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ["cars", "car", {id}]});
+        onSuccess: (data, variables) => {
+            // Invalidate the specific car query using the correct key format
+            queryClient.invalidateQueries({queryKey: [`car-${variables.id}`]});
+            // Also invalidate the cars list query
+            queryClient.invalidateQueries({queryKey: ["cars"]});
         },
     });
     return mutation;
