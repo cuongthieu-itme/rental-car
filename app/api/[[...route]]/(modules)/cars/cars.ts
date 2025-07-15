@@ -8,6 +8,40 @@ import {z} from "zod";
 import {db} from "@/db/drizzle";
 import {insertCarSchema, cars, users} from "@/db/schema";
 
+// Create update schema without ZodEffects
+const updateCarSchema = z.object({
+    id: z.string(),
+    name: z.string().min(1),
+    description: z.string().min(1),
+    ownerId: z.string().optional().nullable(),
+    make: z.string().min(1),
+    model: z.string().min(1),
+    mileage: z.number().int(),
+    color: z.string().min(1),
+    pricePerDay: z.number().int().optional().nullable(),
+    pricePerKm: z.number().int().optional().nullable(),
+    isForDelivery: z.boolean(),
+    isAvailable: z.boolean(),
+    isForHire: z.boolean(),
+    isForRent: z.boolean(),
+    bodyType: z.string().min(1),
+    fuelType: z.string().min(1),
+    transmission: z.string().min(1),
+    driveType: z.string().min(1),
+    condition: z.string().min(1),
+    engineSize: z.number().int(),
+    doors: z.number().int(),
+    cylinders: z.number().int(),
+    features: z.any().optional(),
+    dateManufactured: z.union([z.string(), z.date()]).transform((val) => {
+        if (val instanceof Date) {
+            return val.toISOString();
+        }
+        return val;
+    }),
+    images: z.array(z.string()).min(1, "At least one image is required"),
+});
+
 const app = new Hono()
     .get("/", clerkMiddleware(), async (c) => {
         const auth = getAuth(c);
@@ -158,77 +192,80 @@ const app = new Hono()
     .post(
         "/",
         clerkMiddleware(),
-        zValidator(
-            "json",
-            z
-                .object(insertCarSchema._def.schema.shape)
-                .omit({
-                    images: true,
-                    dateManufactured: true,
-                })
-                .merge(
-                    z.object({
-                        images: z
-                            .array(z.string())
-                            .min(2, "At least one image is required")
-                            .default([]),
-                        dateManufactured: z.string(),
-                    }),
-                ),
-        ),
+        zValidator("json", insertCarSchema),
         async (c) => {
-            const auth = getAuth(c);
-            if (!auth?.userId) {
+            try {
+                const auth = getAuth(c);
+                if (!auth?.userId) {
+                    return c.json(
+                        {success: false, message: "Unauthorized user"},
+                        401,
+                    );
+                }
+
+                const body = c.req.valid("json");
+                console.log(
+                    "Received car data:",
+                    JSON.stringify(body, null, 2),
+                );
+
+                const user = await db.query.users.findFirst({
+                    where: eq(users.clerk_id, auth.userId),
+                });
+                if (!user) {
+                    return c.json(
+                        {success: false, message: "User not found"},
+                        404,
+                    );
+                }
+
+                // Remove carPurpose field before inserting to database
+                const {carPurpose, ...carData} = body;
+                console.log("Car purpose:", carPurpose);
+                console.log(
+                    "Final car data for DB:",
+                    JSON.stringify(carData, null, 2),
+                );
+
+                const values = {
+                    ...carData,
+                    ownerId: user.id,
+                    id: createId(),
+                };
+
+                const [car] = await db
+                    .insert(cars)
+                    .values({
+                        ...values,
+                        dateManufactured: new Date(values.dateManufactured),
+                    })
+                    .returning();
+
+                console.log("Car created successfully:", car.id);
+                return c.json({success: true, car}, 200);
+            } catch (error) {
+                console.error("Error creating car:", error);
                 return c.json(
-                    {success: false, message: "Unauthorized user"},
-                    401,
+                    {
+                        success: false,
+                        message:
+                            error instanceof Error
+                                ? error.message
+                                : "Failed to create car",
+                        error:
+                            error instanceof Error
+                                ? error.stack
+                                : "Unknown error",
+                    },
+                    500,
                 );
             }
-
-            const body = c.req.valid("json");
-
-            const user = await db.query.users.findFirst({
-                where: eq(users.clerk_id, auth.userId),
-            });
-            if (!user) {
-                return c.json({success: false, message: "User not found"}, 404);
-            }
-            const values = {
-                ...body,
-                ownerId: user.id,
-                id: createId(),
-            };
-
-            const car = await db
-                .insert(cars)
-                .values({
-                    ...values,
-                    dateManufactured: new Date(values.dateManufactured),
-                })
-                .returning();
-            return c.json({success: true, car}, 200);
         },
     )
     .put(
         "/",
         clerkMiddleware(),
-        zValidator(
-            "json",
-            z
-                .object(insertCarSchema._def.schema.shape)
-                .omit({
-                    images: true,
-                })
-                .merge(
-                    z.object({
-                        images: z
-                            .array(z.string())
-                            .min(2, "At least one image is required")
-                            .default([]),
-                        id: z.string(),
-                    }),
-                ),
-        ),
+        zValidator("json", updateCarSchema),
         async (c) => {
             const auth = getAuth(c);
             if (!auth?.userId) {
@@ -250,9 +287,17 @@ const app = new Hono()
             if (!car) {
                 return c.json({success: false, message: "car not found"}, 404);
             }
+
+            // Convert dateManufactured to Date object for database
+            const {id, ...updateData} = body;
+            const dataToUpdate = {
+                ...updateData,
+                dateManufactured: new Date(updateData.dateManufactured),
+            };
+
             const [response] = await db
                 .update(cars)
-                .set(body)
+                .set(dataToUpdate)
                 .where(eq(cars.id, body.id))
                 .returning();
             if (!response) {
@@ -262,7 +307,7 @@ const app = new Hono()
                 );
             }
 
-            return c.json({success: false, data: response});
+            return c.json({success: true, data: response});
         },
     )
     .delete(

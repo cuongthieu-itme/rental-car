@@ -11,7 +11,6 @@ export const useAddCar = () => {
             const response = await client.api.cars.$post({
                 json: {
                     ...rest,
-                    dateManufactured: rest.dateManufactured.toISOString(),
                     images: Array.isArray(images)
                         ? images.filter((img): img is string => img !== null)
                         : [],

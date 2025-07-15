@@ -42,15 +42,16 @@ const FormInputField = ({
               max={max}
               id={name}
               {...field}
+              value={field.value || ""}
               placeholder={placeholder}
               type={type}
               className={INPUT_CLASSNAME}
               disabled={disabled}
               onChange={(e) => {
                 if (type === "number") {
-                  field.onChange(e.target.valueAsNumber);
+                  field.onChange(e.target.valueAsNumber || 0);
                 } else {
-                  field.onChange(e.target.value);
+                  field.onChange(e.target.value || "");
                 }
               }}
             />

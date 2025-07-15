@@ -39,7 +39,11 @@ const FormSelect: React.FC<FormSelectProps> = ({
         <FormItem className="col-span-12 sm:col-span-6">
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select
+              onValueChange={field.onChange}
+              value={field.value || ""}
+              defaultValue={field.value || ""}
+            >
               <SelectTrigger className={INPUT_CLASSNAME}>
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>

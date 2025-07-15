@@ -12,7 +12,9 @@
         "studio": "drizzle-kit studio",
         "lint": "next lint --dir . --file .eslintrc.json",
         "lint:fix": "next lint --fix",
-        "format": "npx prettier --check  --write '**/*.{ts,tsx}'"
+        "format": "npx prettier --check  --write '**/*.{ts,tsx}'",
+        "create-admin": "tsx scripts/create-admin.ts",
+        "create-super-admin": "tsx scripts/create-admin.ts"
     },
     "husky": {
         "hooks": {
@@ -65,6 +67,7 @@
         "cloudinary": "^2.5.1",
         "clsx": "^2.1.1",
         "date-fns": "^3.6.0",
+        "dotenv": "^17.2.0",
         "drizzle-orm": "^0.36.4",
         "drizzle-zod": "^0.5.1",
         "embla-carousel-autoplay": "^8.3.1",

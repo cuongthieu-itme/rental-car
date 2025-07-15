@@ -227,7 +227,7 @@ const EditCarSheet: React.FC = () => {
                                         label="Date Manufactured"
                                     />
                                     <FormInputField
-                                        name=""
+                                        name="ownerId"
                                         label="Car Owner"
                                         placeholder={`${data?.owner?.firstName} ${data?.owner?.lastName}`}
                                         disabled

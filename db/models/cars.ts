@@ -56,9 +56,24 @@ const carPurposeEnum = z.enum(["ride", "deliver", "rent"]);
 export type CarPurpose = z.infer<typeof carPurposeEnum>;
 
 export const insertCarSchema = createInsertSchema(cars)
-    .omit({createdAt: true, updatedAt: true, id:true})
+    .omit({createdAt: true, updatedAt: true, id: true})
     .extend({
         carPurpose: carPurposeEnum,
+        dateManufactured: z
+            .union([
+                z.string().min(1, "Date manufactured is required"),
+                z.date(),
+            ])
+            .transform((val) => {
+                if (val instanceof Date) {
+                    return val.toISOString();
+                }
+                return val;
+            }),
+        images: z
+            .array(z.string())
+            .min(1, "At least one image is required")
+            .default([]),
         pricePerDay: z
             .number()
             .int()

@@ -100,19 +100,48 @@ export const columns: ColumnDef<TableTypes>[] = [
     cell: ({ row }) => row.original.address,
   },
   {
-    accessorKey: "  ",
+    accessorKey: "phone",
     header: "Phone",
     cell: ({ row }) => row.original.phone,
   },
   {
+    accessorKey: "role",
+    header: "Role",
+    cell: ({ row }) => {
+      const role = row.original.role || "user";
+      let variant: "default" | "secondary" | "destructive" | "outline" = "secondary";
+      let className = "";
+
+      switch (role) {
+        case "admin":
+          variant = "destructive";
+          className = "text-red-600";
+          break;
+        case "super_admin":
+          variant = "destructive";
+          className = "text-purple-600";
+          break;
+        default:
+          variant = "outline";
+          className = "text-blue-600";
+      }
+
+      return (
+        <Badge variant={variant} className={className}>
+          {role === "super_admin" ? "Super Admin" : role.charAt(0).toUpperCase() + role.slice(1)}
+        </Badge>
+      );
+    },
+  },
+  {
     accessorKey: "isNew",
-    header: "New User",
+    header: "Status",
     cell: ({ row }) => (
       <Badge
         variant={row.original.isNew ? "outline" : "secondary"}
-        className="text-green-600"
+        className={row.original.isNew ? "text-orange-600" : "text-green-600"}
       >
-        {row.original.isNew ? "New" : "Existing"}
+        {row.original.isNew ? "New" : "Active"}
       </Badge>
     ),
   },
