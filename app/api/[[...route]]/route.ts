@@ -6,6 +6,8 @@ import {handle} from "hono/vercel";
 
 import cars from "./(modules)/cars/cars";
 import images from "./(modules)/cars/images";
+import drivers from "./(modules)/drivers/drivers";
+import rentals from "./(modules)/rentals/rentals";
 import clerkManager from "./(modules)/users/clerkManager";
 import users from "./(modules)/users/users";
 import webhooks from "./(modules)/users/webhooks";
@@ -17,7 +19,7 @@ app.use(
     "*",
     cors({
         origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
-        allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
         allowHeaders: ["Content-Type", "Authorization"],
         credentials: true,
     }),
@@ -29,6 +31,8 @@ const routes = app
     .route("/user", clerkManager)
     .route("/cars", cars)
     .route("/cars/images", images)
+    .route("/drivers", drivers)
+    .route("/rentals", rentals)
     .route("/users/webhooks", webhooks);
 
 routes.onError((err, c) => {
@@ -55,5 +59,6 @@ export const GET = handle(app);
 export const POST = handle(app);
 export const PUT = handle(app);
 export const DELETE = handle(app);
+export const PATCH = handle(app);
 
 export type AppType = typeof routes;

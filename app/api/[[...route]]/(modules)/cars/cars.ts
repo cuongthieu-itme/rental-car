@@ -160,17 +160,12 @@ const app = new Hono()
         zValidator(
             "param",
             z.object({
-                id: z.string().optional(),
+                id: z.string().min(1, "Car ID is required"),
             }),
         ),
         async (c) => {
             const {id} = c.req.valid("param");
-            if (!id) {
-                return c.json(
-                    {success: false, message: "Car ID is required"},
-                    400,
-                );
-            }
+
             const car = await db.query.cars.findFirst({
                 where: eq(cars.id, id),
                 with: {
