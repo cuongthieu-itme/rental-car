@@ -19,18 +19,18 @@ import { Input } from "@/components/ui/input";
 import { insertUserSchema } from "@/db/schema";
 import { useUpdateUser } from "@/features//users/api/use-update-user";
 import { INPUT_CLASSNAME } from "@/utils/constants";
-const personalInfoSchema = insertUserSchema
-  .pick({
-    id: true,
-    clerk_id: true,
-    firstName: true,
-    lastName: true,
-    email: true,
-    phone: true,
-    address: true,
-    location: true,
-  })
-  .required();
+
+// Create a schema that matches the API expectations
+const personalInfoSchema = z.object({
+  id: z.string(),
+  clerk_id: z.string(),
+  email: z.string().email(),
+  firstName: z.string().nullable().optional(),
+  lastName: z.string().nullable().optional(),
+  phone: z.string().nullable().optional(),
+  address: z.string().nullable().optional(),
+  location: z.string().nullable().optional(),
+});
 
 type PersonalInfoSchema = z.infer<typeof personalInfoSchema>;
 
@@ -64,9 +64,19 @@ const PersonalInfo = ({ data }: { data: PersonalInfoSchema }) => {
     form.reset(defaultValues);
   }, [data, form]);
 
-  async function onSubmit(data: PersonalInfoSchema) {
+  async function onSubmit(formData: PersonalInfoSchema) {
     try {
-      const response = await updateUser.mutateAsync(data);
+      // Convert empty strings to null for optional fields
+      const submitData = {
+        ...formData,
+        firstName: formData.firstName || null,
+        lastName: formData.lastName || null,
+        phone: formData.phone || null,
+        address: formData.address || null,
+        location: formData.location || null,
+      };
+
+      const response = await updateUser.mutateAsync(submitData);
       if (response) {
         toast.success("User updated successfully!");
       }
