@@ -20,12 +20,11 @@ const DeleteDriverDialog = () => {
 
   const handleDeleteDriver = async () => {
     if (!id) return;
-
     try {
       const response = await deleteDriver.mutateAsync(id);
-      if (response.id) {
-        toast.success(`Driver ${response.id} has been deleted successfully`);
-        onClose();
+      if (response.success) {
+        toast.success(response.message || "Driver has been deleted successfully");
+        setTimeout(onClose, 100); // Delay nhỏ để UI framework cập nhật state
       }
     } catch (error) {
       console.log(error);
@@ -34,7 +33,7 @@ const DeleteDriverDialog = () => {
   };
 
   return (
-    <AlertDialog open={isOpen}>
+    <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
