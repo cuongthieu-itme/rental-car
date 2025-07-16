@@ -32,6 +32,7 @@ import {
 import { useGetUsers } from "@/features/users/api/use-get-users";
 
 import { columns } from "../widgets/TableColumns";
+import { Button } from "@/components/ui/button";
 
 const UsersTable = () => {
   const { data, isLoading } = useGetUsers();
@@ -63,14 +64,14 @@ const UsersTable = () => {
       <CardHeader className="flex-row items-center justify-between">
         <div>
           <CardTitle>Users</CardTitle>
-          <div className="flex items-center py-4">
+          <div className="flex items-center py-4 gap-2">
             <Input
-              placeholder="Filter users..."
+              placeholder="Filter users by email..."
               value={
-                (table.getColumn("name")?.getFilterValue() as string) ?? ""
+                (table.getColumn("email")?.getFilterValue() as string) ?? ""
               }
               onChange={(event) =>
-                table.getColumn("name")?.setFilterValue(event.target.value)
+                table.getColumn("email")?.setFilterValue(event.target.value)
               }
               className="max-w-sm"
             />

@@ -16,6 +16,7 @@ import {
 import { insertUserSchema } from "@/db/schema";
 import { useDeleteUser } from "@/hooks/user/use-delete-user";
 import { useEditUser } from "@/hooks/user/use-edit-user";
+import { useViewUser } from "@/hooks/user/use-view-user";
 
 type TableTypes = z.infer<typeof insertUserSchema>;
 
@@ -23,6 +24,7 @@ const UserActions = ({ row }: { row: Row<TableTypes> }) => {
   const user = row.original;
   const { onOpen } = useEditUser();
   const { onOpen: onDelete } = useDeleteUser();
+  const { onOpen: onView } = useViewUser();
 
   return (
     <div className="sticky right-0">
@@ -41,11 +43,13 @@ const UserActions = ({ row }: { row: Row<TableTypes> }) => {
             Copy email
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>View details</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onOpen(user.email)}>
+          <DropdownMenuItem onClick={() => onView(user.id)}>
+            View details
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onOpen(user.id)}>
             Edit user
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onDelete(user.email)}>
+          <DropdownMenuItem onClick={() => onDelete(user.id)}>
             Delete user
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -141,6 +141,7 @@ const app = new Hono()
                     address: true,
                     phone: true,
                     email: true,
+                    role: true,
                 },
             });
             if (!data) {
@@ -172,6 +173,7 @@ const app = new Hono()
                 email: true,
                 address: true,
                 phone: true,
+                role: true, // Thêm dòng này để nhận role từ client
             }),
         ),
         async (c) => {

@@ -5,6 +5,7 @@ import { AddDriverModal } from "@/screens/drivers/components/AddDriverModal";
 import { EditDriverModal } from "@/screens/drivers/components/EditDriverModal";
 import DeleteDriverDialog from "@/screens/drivers/components/DeleteDriverDialog";
 import ViewDriverSheet from "@/screens/drivers/components/ViewDriverSheet";
+import ViewUserSheet from "@/screens/users/components/ViewUserSheet";
 
 export const ModalProvider = () => {
   return (
@@ -14,6 +15,7 @@ export const ModalProvider = () => {
       <EditDriverModal />
       <DeleteDriverDialog />
       <ViewDriverSheet />
+      <ViewUserSheet />
     </>
   );
 };

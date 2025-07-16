@@ -1,5 +1,6 @@
 import {useMutation} from "@tanstack/react-query";
 import {z} from "zod";
+import {useQueryClient} from "@tanstack/react-query";
 
 import {insertUserSchema} from "@/db/schema";
 import {client} from "@/lib/hono";
@@ -17,6 +18,7 @@ const updateUserData = z.object({
 });
 
 export const useUpdateUser = () => {
+    const queryClient = useQueryClient();
     const query = useMutation({
         mutationFn: async (data: z.infer<typeof updateUserData>) => {
             const response = await client.api.users[":id"].$put({
@@ -38,6 +40,9 @@ export const useUpdateUser = () => {
             }
             const {data: updatedUser} = await response.json();
             return updatedUser;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries(["users"]);
         },
     });
     return query;
