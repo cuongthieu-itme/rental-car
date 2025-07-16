@@ -9,6 +9,7 @@ import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { useRideBooking } from "@/hooks/ride/use-ride-booking";
 
 import { heroFormSchema } from "../widgets/hero/HeroFormUtils";
 
@@ -23,6 +24,8 @@ const HeroForm = ({ setRide }: { setRide: (ride: string) => void }) => {
       type: "ride",
     },
   });
+
+  const { onOpen: openRideBooking } = useRideBooking();
 
   const [selectedRide, setSelectedRide] = useState<string>("ride");
   const [pickUpDate, setPickUpDate] = useState<Date | null>(null);
@@ -98,11 +101,28 @@ const HeroForm = ({ setRide }: { setRide: (ride: string) => void }) => {
         return;
       }
 
-      if (selectedRide === "ride") {
-        data.pickUpDateTime = pickUpDateTime ?? undefined;
-      } else if (selectedRide === "rent") {
+      // Handle ride booking
+      if (selectedRide === "ride" && data.from && data.to && pickUpDateTime) {
+        openRideBooking({
+          pickupLocation: data.from,
+          dropoffLocation: data.to,
+          pickupTime: pickUpDateTime,
+        });
+        return;
+      }
+
+      // Handle rental booking (existing functionality)
+      if (selectedRide === "rent") {
         data.rentFromDateTime = rentFromDateTime ?? undefined;
         data.rentToDateTime = rentToDateTime ?? undefined;
+        // TODO: Handle rental booking modal
+        console.log("Rent booking data:", data);
+      }
+
+      // Handle delivery booking
+      if (selectedRide === "deliver" && data.from && data.to) {
+        // TODO: Handle delivery booking modal
+        console.log("Delivery booking data:", data);
       }
     } catch (error) {
       console.error("Form submission error:", error);
@@ -178,7 +198,11 @@ const HeroForm = ({ setRide }: { setRide: (ride: string) => void }) => {
           type="submit"
           className="group font-medium flex items-center gap-x-2"
         >
-          <span>See Pricing</span>
+          <span>
+            {selectedRide === "ride" ? "Book Ride" :
+             selectedRide === "rent" ? "See Pricing" :
+             "Book Delivery"}
+          </span>
           <IoNavigate className="group-hover:translate-x-3 group-hover:-translate-y-2 transition-all ease-in-out duration-300" />
         </Button>
       </form>

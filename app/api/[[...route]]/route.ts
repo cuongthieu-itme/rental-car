@@ -8,6 +8,7 @@ import cars from "./(modules)/cars/cars";
 import images from "./(modules)/cars/images";
 import drivers from "./(modules)/drivers/drivers";
 import rentals from "./(modules)/rentals/rentals";
+import rides from "./(modules)/rides/rides";
 import clerkManager from "./(modules)/users/clerkManager";
 import users from "./(modules)/users/users";
 import webhooks from "./(modules)/users/webhooks";
@@ -33,6 +34,7 @@ const routes = app
     .route("/cars/images", images)
     .route("/drivers", drivers)
     .route("/rentals", rentals)
+    .route("/rides", rides)
     .route("/users/webhooks", webhooks);
 
 routes.onError((err, c) => {

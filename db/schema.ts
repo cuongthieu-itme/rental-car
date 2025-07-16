@@ -4,5 +4,6 @@ export * from "./models/drivers";
 export * from "./models/enums";
 export * from "./models/delivery";
 export * from "./models/rental";
+export * from "./models/rides";
 export * from "./models/rating";
 export * from "./models/transactions";
