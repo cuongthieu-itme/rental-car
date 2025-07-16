@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/select";
 import { useCreateDriver } from "@/features/drivers/api/use-create-driver";
 import { useGetCars } from "@/features/cars/api/use-get-cars";
-import { useAddDriver } from "@/hooks/use-add-driver";
+import { useAddDriver } from "@/hooks/driver/use-add-driver";
 
 const addDriverSchema = z.object({
   name: z.string().min(1, "Name is required"),

@@ -21,7 +21,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useFilterCar } from "@/hooks/use-car-filters";
+import { useFilterCar } from "@/hooks/car/use-car-filters";
 
 const CarList = () => {
   const [filters, setFilters] = useState<ListCarsParams>({});

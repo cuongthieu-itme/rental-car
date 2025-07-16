@@ -33,7 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetDrivers } from "@/features/drivers/api/use-get-drivers";
-import { useAddDriver } from "@/hooks/use-add-driver";
+import { useAddDriver } from "@/hooks/driver/use-add-driver";
 
 import { columns, DriverType } from "../widgets/TableColumns";
 

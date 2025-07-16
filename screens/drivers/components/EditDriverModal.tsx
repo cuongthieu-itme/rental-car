@@ -33,7 +33,7 @@ import {
 import { useUpdateDriver } from "@/features/drivers/api/use-update-driver";
 import { useGetDriver } from "@/features/drivers/api/use-get-driver";
 import { useGetCars } from "@/features/cars/api/use-get-cars";
-import { useEditDriver } from "@/hooks/use-edit-driver";
+import { useEditDriver } from "@/hooks/driver/use-edit-driver";
 
 const editDriverSchema = z.object({
   name: z.string().min(1, "Name is required"),

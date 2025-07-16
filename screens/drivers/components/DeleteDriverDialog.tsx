@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Icons } from "@/components/ui/icons";
 import { useDeleteDriverMutation } from "@/features/drivers/api/use-delete-driver";
-import { useDeleteDriver } from "@/hooks/use-delete-driver";
+import { useDeleteDriver } from "@/hooks/driver/use-delete-driver";
 
 const DeleteDriverDialog = () => {
   const { isOpen, onClose, id } = useDeleteDriver();

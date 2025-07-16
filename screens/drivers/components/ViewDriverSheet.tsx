@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { useGetDriver } from "@/features/drivers/api/use-get-driver";
-import { useViewDriver } from "@/hooks/use-view-driver";
+import { useViewDriver } from "@/hooks/driver/use-view-driver";
 
 const ViewDriverSheet = () => {
   const { isOpen, onClose, id } = useViewDriver();

@@ -14,8 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { insertUserSchema } from "@/db/schema";
-import { useDeleteUser } from "@/hooks/use-delete-user";
-import { useEditUser } from "@/hooks/use-edit-user";
+import { useDeleteUser } from "@/hooks/user/use-delete-user";
+import { useEditUser } from "@/hooks/user/use-edit-user";
 
 type TableTypes = z.infer<typeof insertUserSchema>;
 

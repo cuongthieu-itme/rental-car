@@ -26,9 +26,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { selectCarSchema } from "@/db/schema";
-import { useDeleteCar } from "@/hooks/use-delete-car";
-import { useEditCar } from "@/hooks/use-edit-car";
-import { useViewCar } from "@/hooks/use-view-car";
+import { useDeleteCar } from "@/hooks/car/use-delete-car";
+import { useEditCar } from "@/hooks/car/use-edit-car";
+import { useViewCar } from "@/hooks/car/use-view-car";
 
 const refinedSchema = selectCarSchema.extend({
   owner: z.object({

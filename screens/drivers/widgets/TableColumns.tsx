@@ -16,9 +16,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUpdateDriverStatus } from "@/features/drivers/api/use-update-driver-status";
-import { useEditDriver } from "@/hooks/use-edit-driver";
-import { useDeleteDriver } from "@/hooks/use-delete-driver";
-import { useViewDriver } from "@/hooks/use-view-driver";
+import { useEditDriver } from "@/hooks/driver/use-edit-driver";
+import { useDeleteDriver } from "@/hooks/driver/use-delete-driver";
+import { useViewDriver } from "@/hooks/driver/use-view-driver";
 
 // Driver type based on the database schema
 export type DriverType = {

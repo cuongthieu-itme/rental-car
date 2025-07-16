@@ -16,7 +16,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useGetCar } from "@/features/cars/api/use-get-car";
-import { useViewCar } from "@/hooks/use-view-car";
+import { useViewCar } from "@/hooks/car/use-view-car";
 
 const ViewCarSheet: React.FC = () => {
   const { isOpen, onClose, id } = useViewCar();

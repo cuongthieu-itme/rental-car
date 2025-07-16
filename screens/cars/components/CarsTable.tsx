@@ -23,7 +23,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import {useGetCars} from "@/features/cars/api/use-get-cars";
-import {useNewCar} from "@/hooks/use-new-car";
+import { useNewCar } from "@/hooks/car/use-new-car";
 
 import TableLoader from "../../../components/common/loaders/TableLoader";
 import {TablePagination} from "../../../components/pagination/TablePagination";

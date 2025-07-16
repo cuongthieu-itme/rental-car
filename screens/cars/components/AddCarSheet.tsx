@@ -22,7 +22,7 @@ import {
 
 import {insertCarSchema} from "@/db/schema";
 import {useAddCar} from "@/features/cars/api/use-add-car";
-import {useNewCar} from "@/hooks/use-new-car";
+import {useNewCar} from "@/hooks/car/use-new-car";
 import {renderStepContent} from "./RenderFormSteps";
 import Stepper from "./Stepper";
 

@@ -33,7 +33,7 @@ import {ToggleGroup, ToggleGroupItem} from "@/components/ui/toggle-group";
 import {insertCarSchema} from "@/db/schema";
 import {useGetCar} from "@/features/cars/api/use-get-car";
 import {useUpdateCar} from "@/features/cars/api/use-update-car";
-import {useEditCar} from "@/hooks/use-edit-car";
+import {useEditCar} from "@/hooks/car/use-edit-car";
 import {cn} from "@/lib/utils";
 import {INPUT_CLASSNAME} from "@/utils/constants";
 

@@ -9,7 +9,7 @@ import { Icons } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { useDeleteImage } from "@/features/cars/api/use-delete-image";
 import { useUploadImage } from "@/features/cars/api/use-upload-image";
-import { useEditCar } from "@/hooks/use-edit-car";
+import { useEditCar } from "@/hooks/car/use-edit-car";
 
 interface FilePreview {
   file: File;
