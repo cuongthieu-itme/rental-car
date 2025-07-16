@@ -1,5 +1,7 @@
 "use client";
+
 import { toast } from "sonner";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,17 +13,19 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Icons } from "@/components/ui/icons";
-import { useDeleteUser as useDeleteUserMutation } from "@/features/users/api/use-delete-user";
-import { useDeleteUser } from "@/hooks/user/use-delete-user";
+import { useDeleteRental as useDeleteRentalMutation } from "@/features/rentals/api/use-delete-rental";
+import { useDeleteRental } from "@/hooks/rental/use-delete-rental";
 
-const DeleteUserDialog = () => {
-  const { isOpen, onClose, id } = useDeleteUser();
-  const deleteUser = useDeleteUserMutation();
+const DeleteRentalDialog = () => {
+  const { isOpen, onClose, id } = useDeleteRental();
+  const deleteRental = useDeleteRentalMutation();
 
-  const handleDeleteUser = async () => {
+  const handleDeleteRental = async () => {
+    if (!id) return;
+
     try {
-      await deleteUser.mutateAsync(id!);
-      toast.success("User has been deleted successfully");
+      await deleteRental.mutateAsync(id);
+      toast.success("Rental has been deleted successfully");
       setTimeout(onClose, 100);
     } catch (error: any) {
       toast.error(error?.message || "An error occurred, please try again!");
@@ -34,14 +38,14 @@ const DeleteUserDialog = () => {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete this user
-            and remove all data associated with it from the servers.
+            This action cannot be undone. This will permanently delete this rental
+            booking and remove all data associated with it from the servers.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDeleteUser} disabled={deleteUser.isPending}>
-            {deleteUser.isPending ? (
+          <AlertDialogAction onClick={handleDeleteRental} disabled={deleteRental.isPending}>
+            {deleteRental.isPending ? (
               <div className="flex items-center space-x-2">
                 <Icons.spinner className="animate-spin size-6" />
                 <span>Deleting...</span>
@@ -56,4 +60,4 @@ const DeleteUserDialog = () => {
   );
 };
 
-export default DeleteUserDialog;
+export default DeleteRentalDialog;

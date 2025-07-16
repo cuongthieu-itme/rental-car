@@ -1,21 +1,26 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {client} from "@/lib/hono";
 
-export const useDeleteUser = () => {
+export const useDeleteRental = () => {
     const queryClient = useQueryClient();
+
     return useMutation({
         mutationFn: async (id: string) => {
-            const response = await client.api.users[":id"].$delete({
+            const response = await client.api.rentals[":id"].$delete({
                 param: {id},
             });
+
             const result = await response.json();
+
             if (!response.ok || !result.success) {
-                throw new Error(result.message || "Failed to delete user");
+                throw new Error(result.message || "Failed to delete rental");
             }
-            return result.data;
+
+            return result;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries(["users"]);
+            // Invalidate all rental queries to refresh data
+            queryClient.invalidateQueries({queryKey: ["rentals"]});
         },
     });
 };

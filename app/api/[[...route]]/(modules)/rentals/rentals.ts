@@ -317,12 +317,36 @@ const app = new Hono()
             // Check if rental exists
             const existingRental = await db.query.rentals.findFirst({
                 where: eq(rentals.id, body.id),
+                with: {
+                    user: true,
+                },
             });
 
             if (!existingRental) {
                 return c.json(
                     {success: false, message: "Rental not found"},
                     404,
+                );
+            }
+
+            // Check authorization - only admin or rental owner can update
+            const currentUser = await db.query.users.findFirst({
+                where: eq(users.clerk_id, auth.userId),
+            });
+
+            if (!currentUser) {
+                return c.json({success: false, message: "User not found"}, 404);
+            }
+
+            const isAdmin =
+                currentUser.role === "admin" ||
+                currentUser.role === "super_admin";
+            const isOwner = existingRental.userId === currentUser.id;
+
+            if (!isAdmin && !isOwner) {
+                return c.json(
+                    {success: false, message: "Insufficient permissions"},
+                    403,
                 );
             }
 
@@ -371,10 +395,33 @@ const app = new Hono()
 
         const existingRental = await db.query.rentals.findFirst({
             where: eq(rentals.id, id),
+            with: {
+                user: true,
+            },
         });
 
         if (!existingRental) {
             return c.json({success: false, message: "Rental not found"}, 404);
+        }
+
+        // Check authorization - only admin or rental owner can delete
+        const currentUser = await db.query.users.findFirst({
+            where: eq(users.clerk_id, auth.userId),
+        });
+
+        if (!currentUser) {
+            return c.json({success: false, message: "User not found"}, 404);
+        }
+
+        const isAdmin =
+            currentUser.role === "admin" || currentUser.role === "super_admin";
+        const isOwner = existingRental.userId === currentUser.id;
+
+        if (!isAdmin && !isOwner) {
+            return c.json(
+                {success: false, message: "Insufficient permissions"},
+                403,
+            );
         }
 
         try {

@@ -41,9 +41,23 @@ const PendingDriversTable = () => {
     [],
   );
   const [rowSelection, setRowSelection] = React.useState({});
+  const [globalFilter, setGlobalFilter] = React.useState("");
+
+  // Filter data based on name and email
+  const filteredData = React.useMemo(() => {
+    if (!data || !globalFilter) return data ?? [];
+
+    return data.filter((driver: any) => {
+      const name = driver.name?.toLowerCase() || "";
+      const email = driver.email?.toLowerCase() || "";
+      const searchTerm = globalFilter.toLowerCase();
+
+      return name.includes(searchTerm) || email.includes(searchTerm);
+    });
+  }, [data, globalFilter]);
 
   const table = useReactTable<DriverType>({
-    data: data ?? [],
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -68,10 +82,8 @@ const PendingDriversTable = () => {
         <div className="flex items-center justify-between">
           <Input
             placeholder="Filter by name or email..."
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn("name")?.setFilterValue(event.target.value)
-            }
+            value={globalFilter}
+            onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-sm"
           />
           <div className="flex items-center space-x-2">

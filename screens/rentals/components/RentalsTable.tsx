@@ -29,13 +29,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useGetUsers } from "@/features/users/api/use-get-users";
+import { useGetAllRentals } from "@/features/rentals/api/use-get-all-rentals";
 
-import { columns } from "../widgets/TableColumns";
-import { Button } from "@/components/ui/button";
+import { columns } from "../widgets/RentalTableColumns";
 
-const UsersTable = () => {
-  const { data, isLoading } = useGetUsers();
+const RentalsTable = () => {
+  const { data, isLoading } = useGetAllRentals();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -44,21 +43,19 @@ const UsersTable = () => {
 
   const [rowSelection, setRowSelection] = React.useState({});
 
-  // Filter data based on email, firstName, and lastName
+  // Filter data based on customer email
   const filteredData = React.useMemo(() => {
     if (!data || !globalFilter) return data ?? [];
 
-    return data.filter((user: any) => {
-      const email = user.email?.toLowerCase() || "";
-      const firstName = user.firstName?.toLowerCase() || "";
-      const lastName = user.lastName?.toLowerCase() || "";
-      const fullName = `${firstName} ${lastName}`.trim();
+    return data.filter((rental: any) => {
+      const email = rental.user?.email?.toLowerCase() || "";
+      const customerName = [rental.user?.firstName, rental.user?.lastName]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase() || "";
       const searchTerm = globalFilter.toLowerCase();
 
-      return email.includes(searchTerm) ||
-             firstName.includes(searchTerm) ||
-             lastName.includes(searchTerm) ||
-             fullName.includes(searchTerm);
+      return email.includes(searchTerm) || customerName.includes(searchTerm);
     });
   }, [data, globalFilter]);
 
@@ -78,15 +75,17 @@ const UsersTable = () => {
       columnFilters,
     },
   });
+
   if (isLoading) return <TableLoader />;
+
   return (
     <Card className="mt-6 shadow-none border-none">
       <CardHeader className="flex-row items-center justify-between">
         <div>
-          <CardTitle>Users</CardTitle>
+          <CardTitle>Rentals</CardTitle>
           <div className="flex items-center py-4 gap-2">
             <Input
-              placeholder="Filter by email, name..."
+              placeholder="Filter by customer email or name..."
               value={globalFilter}
               onChange={(event) => setGlobalFilter(event.target.value)}
               className="max-w-sm"
@@ -98,7 +97,7 @@ const UsersTable = () => {
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow className="h-14 bg-gray-50 " key={headerGroup.id}>
+              <TableRow className="h-14 bg-gray-50" key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     className="text-gray-900 font-semibold"
@@ -155,4 +154,4 @@ const UsersTable = () => {
   );
 };
 
-export default UsersTable;
+export default RentalsTable;

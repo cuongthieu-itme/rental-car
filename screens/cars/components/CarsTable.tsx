@@ -33,6 +33,7 @@ const CarsTable = () => {
     const {data, isLoading} = useGetCars();
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [globalFilter, setGlobalFilter] = useState("");
     const {onOpen} = useNewCar();
 
     const transformedData = useMemo(() => {
@@ -52,8 +53,24 @@ const CarsTable = () => {
             : [];
     }, [data]);
 
+    // Filter data based on car name, make, and model
+    const filteredData = useMemo(() => {
+        if (!transformedData || !globalFilter) return transformedData;
+
+        return transformedData.filter((car: any) => {
+            const name = car.name?.toLowerCase() || "";
+            const make = car.make?.toLowerCase() || "";
+            const model = car.model?.toLowerCase() || "";
+            const searchTerm = globalFilter.toLowerCase();
+
+            return name.includes(searchTerm) ||
+                   make.includes(searchTerm) ||
+                   model.includes(searchTerm);
+        });
+    }, [transformedData, globalFilter]);
+
     const table = useReactTable<TableTypes>({
-        data: transformedData,
+        data: filteredData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -77,16 +94,9 @@ const CarsTable = () => {
                 </Button>
 
                 <Input
-                    placeholder="Filter cars..."
-                    value={
-                        (table.getColumn("name")?.getFilterValue() as string) ??
-                        ""
-                    }
-                    onChange={(event) =>
-                        table
-                            .getColumn("name")
-                            ?.setFilterValue(event.target.value)
-                    }
+                    placeholder="Filter by car name, make, or model..."
+                    value={globalFilter}
+                    onChange={(event) => setGlobalFilter(event.target.value)}
                     className="max-w-sm"
                 />
             </div>
@@ -104,22 +114,15 @@ const CarsTable = () => {
                                             onClick={header.column.getToggleSortingHandler()}
                                         >
                                             {header.isPlaceholder ? null : (
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex items-center justify-between">
                                                     {flexRender(
-                                                        header.column.columnDef
-                                                            .header,
+                                                        header.column.columnDef.header,
                                                         header.getContext(),
                                                     )}
                                                     {{
-                                                        asc: (
-                                                            <ArrowUp className="h-4 w-4" />
-                                                        ),
-                                                        desc: (
-                                                            <ArrowDown className="h-4 w-4" />
-                                                        ),
-                                                    }[
-                                                        header.column.getIsSorted() as string
-                                                    ] ?? null}
+                                                        asc: <ArrowUp className="ml-2 h-4 w-4" />,
+                                                        desc: <ArrowDown className="ml-2 h-4 w-4" />,
+                                                    }[header.column.getIsSorted() as string] ?? null}
                                                 </div>
                                             )}
                                         </TableHead>
@@ -127,6 +130,7 @@ const CarsTable = () => {
                                 </TableRow>
                             ))}
                         </TableHeader>
+
                         <TableBody>
                             {table.getRowModel().rows?.length ? (
                                 table.getRowModel().rows.map((row) => (
