@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { ColumnDef, Row } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import Image from "rc-image";
@@ -27,6 +28,7 @@ import {
 import { selectCarSchema } from "@/db/schema";
 import { useDeleteCar } from "@/hooks/use-delete-car";
 import { useEditCar } from "@/hooks/use-edit-car";
+import { useViewCar } from "@/hooks/use-view-car";
 
 const refinedSchema = selectCarSchema.extend({
   owner: z.object({
@@ -41,6 +43,7 @@ const CarActions = ({ row }: { row: Row<TableTypes> }) => {
   const car = row.original;
   const { onOpen } = useEditCar();
   const { onOpen: onDelete } = useDeleteCar();
+  const { onOpen: onView } = useViewCar();
 
   return (
     <div className="sticky right-0">
@@ -63,7 +66,9 @@ const CarActions = ({ row }: { row: Row<TableTypes> }) => {
             Copy car ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>View details</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onView(car.id)}>
+            View details
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => onOpen(car.id)}>
             Edit car
           </DropdownMenuItem>
