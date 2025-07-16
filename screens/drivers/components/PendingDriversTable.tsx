@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/table";
 import { useGetPendingDrivers } from "@/features/drivers/api/use-get-pending-drivers";
 
-import { columns } from "../widgets/TableColumns";
+import { columns, DriverType } from "../widgets/TableColumns";
 
 const PendingDriversTable = () => {
   const { data, isLoading } = useGetPendingDrivers();
@@ -42,9 +42,9 @@ const PendingDriversTable = () => {
   );
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const table = useReactTable({
+  const table = useReactTable<DriverType>({
     data: data ?? [],
-    columns: columns as any,
+    columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,

@@ -13,7 +13,6 @@ export const useUpdateDriverStatus = () => {
 
     return useMutation({
         mutationFn: async (data: UpdateDriverStatusRequest) => {
-            // Use string interpolation to call the correct endpoint
             const response = await client.api[
                 `drivers/${data.id}/status`
             ].$patch({
@@ -30,7 +29,8 @@ export const useUpdateDriverStatus = () => {
             return await response.json();
         },
         onSuccess: (data) => {
-            toast.success(data.message);
+            const action = data.data?.isApproved ? "approved" : "rejected";
+            toast.success(`Driver ${action} successfully`);
             queryClient.invalidateQueries({queryKey: ["drivers"]});
             queryClient.invalidateQueries({queryKey: ["drivers", "pending"]});
         },

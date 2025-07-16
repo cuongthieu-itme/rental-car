@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -30,41 +30,66 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCreateDriver } from "@/features/drivers/api/use-create-driver";
+import { useUpdateDriver } from "@/features/drivers/api/use-update-driver";
+import { useGetDriver } from "@/features/drivers/api/use-get-driver";
 import { useGetCars } from "@/features/cars/api/use-get-cars";
-import { useAddDriver } from "@/hooks/use-add-driver";
+import { useEditDriver } from "@/hooks/use-edit-driver";
 
-const addDriverSchema = z.object({
+const editDriverSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Valid email is required"),
   licenseNumber: z.string().min(1, "License number is required"),
   carId: z.string().optional(),
+  isActive: z.boolean().optional(),
+  isApproved: z.boolean().optional(),
 });
 
-type AddDriverFormData = z.infer<typeof addDriverSchema>;
+type EditDriverFormData = z.infer<typeof editDriverSchema>;
 
-export const AddDriverModal: React.FC = () => {
-  const { isOpen, onClose } = useAddDriver();
-  const createDriver = useCreateDriver();
+export const EditDriverModal: React.FC = () => {
+  const { isOpen, onClose, id } = useEditDriver();
+  const { data: driver, isLoading } = useGetDriver(id);
+  const updateDriver = useUpdateDriver();
   const { data: cars } = useGetCars();
 
-  const form = useForm<AddDriverFormData>({
-    resolver: zodResolver(addDriverSchema),
+  const form = useForm<EditDriverFormData>({
+    resolver: zodResolver(editDriverSchema),
     defaultValues: {
       name: "",
       email: "",
       licenseNumber: "",
       carId: "none",
+      isActive: true,
+      isApproved: false,
     },
   });
 
-  const onSubmit = async (data: AddDriverFormData) => {
+  // Populate form with existing driver data when data is loaded
+  useEffect(() => {
+    if (driver && !isLoading) {
+      form.reset({
+        name: driver.name || "",
+        email: driver.email || "",
+        licenseNumber: driver.licenseNumber || "",
+        carId: driver.car?.id || "none",
+        isActive: driver.isActive ?? true,
+        isApproved: driver.isApproved ?? false,
+      });
+    }
+  }, [driver, isLoading, form]);
+
+  const onSubmit = async (data: EditDriverFormData) => {
+    if (!id) return;
+
     try {
-      await createDriver.mutateAsync({
+      await updateDriver.mutateAsync({
+        id,
         name: data.name,
         email: data.email,
         licenseNumber: data.licenseNumber,
         carId: data.carId === "none" ? undefined : data.carId,
+        isActive: data.isActive,
+        isApproved: data.isApproved,
       });
       form.reset();
       onClose();
@@ -82,9 +107,9 @@ export const AddDriverModal: React.FC = () => {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add New Driver</DialogTitle>
+          <DialogTitle>Edit Driver</DialogTitle>
           <DialogDescription>
-            Fill in the driver details below. Assign a car if needed.
+            Update the driver details below.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -167,8 +192,8 @@ export const AddDriverModal: React.FC = () => {
               <Button type="button" variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={createDriver.isPending}>
-                {createDriver.isPending ? "Adding..." : "Add Driver"}
+              <Button type="submit" disabled={updateDriver.isPending}>
+                {updateDriver.isPending ? "Updating..." : "Update Driver"}
               </Button>
             </DialogFooter>
           </form>

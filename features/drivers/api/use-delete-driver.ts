@@ -3,7 +3,7 @@ import {toast} from "sonner";
 
 import {client} from "@/lib/hono";
 
-export const useDeleteDriver = () => {
+export const useDeleteDriverMutation = () => {
     const queryClient = useQueryClient();
 
     return useMutation({

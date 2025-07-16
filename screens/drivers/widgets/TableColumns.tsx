@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Trash2, Edit, Check, X } from "lucide-react";
+import { MoreHorizontal, Trash2, Edit, Check, X, Eye } from "lucide-react";
 import React from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -16,10 +16,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUpdateDriverStatus } from "@/features/drivers/api/use-update-driver-status";
-import { useDeleteDriver } from "@/features/drivers/api/use-delete-driver";
+import { useEditDriver } from "@/hooks/use-edit-driver";
+import { useDeleteDriver } from "@/hooks/use-delete-driver";
+import { useViewDriver } from "@/hooks/use-view-driver";
 
 // Driver type based on the database schema
-type DriverType = {
+export type DriverType = {
   id: string;
   name: string;
   email: string;
@@ -145,7 +147,9 @@ export const columns: ColumnDef<DriverType>[] = [
 
 function ActionsCell({ driver }: { driver: DriverType }) {
   const updateStatus = useUpdateDriverStatus();
-  const deleteDriver = useDeleteDriver();
+  const { onOpen: onEdit } = useEditDriver();
+  const { onOpen: onDelete } = useDeleteDriver();
+  const { onOpen: onView } = useViewDriver();
 
   const handleApprove = () => {
     updateStatus.mutate({ id: driver.id, isApproved: true });
@@ -155,10 +159,16 @@ function ActionsCell({ driver }: { driver: DriverType }) {
     updateStatus.mutate({ id: driver.id, isApproved: false });
   };
 
+  const handleEdit = () => {
+    onEdit(driver.id);
+  };
+
   const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this driver?")) {
-      deleteDriver.mutate(driver.id);
-    }
+    onDelete(driver.id);
+  };
+
+  const handleView = () => {
+    onView(driver.id);
   };
 
   return (
@@ -172,6 +182,11 @@ function ActionsCell({ driver }: { driver: DriverType }) {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
+
+        <DropdownMenuItem onClick={handleView}>
+          <Eye className="mr-2 h-4 w-4" />
+          View details
+        </DropdownMenuItem>
 
         {!driver.isApproved && (
           <>
@@ -187,7 +202,7 @@ function ActionsCell({ driver }: { driver: DriverType }) {
           </>
         )}
 
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleEdit}>
           <Edit className="mr-2 h-4 w-4" />
           Edit
         </DropdownMenuItem>
